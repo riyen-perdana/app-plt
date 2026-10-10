@@ -37,7 +37,10 @@ function LoginPage() {
         </p>
         <h1 className="text-xl font-semibold">Masuk ke akun Anda</h1>
       </div>
-      <form className="flex flex-col gap-5">
+      <form
+        className="flex flex-col gap-5"
+        onSubmit={(event) => event.preventDefault()}
+      >
         <FieldGroup>
           <Field>
             <FieldLabel htmlFor="identifier">Username atau Email</FieldLabel>

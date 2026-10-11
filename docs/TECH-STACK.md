@@ -7,6 +7,10 @@ di app `app-plt` (Aplikasi Pelatihan, UIN Suska Riau).
 > lebih dulu. Jika butuh teknologi yang belum terdaftar, **perbarui dokumen ini
 > terlebih dahulu** (dan catat alasannya di bagian "Log Keputusan"), baru
 > implementasi.
+>
+> Pembagian dokumen: TECH-STACK = *apa* yang dipakai, `ARCHITECTURE.md` = *di
+> mana* kode ditata, `ROADMAP.md` = *urutan* pengerjaan, `step.md` = catatan
+> belajar. Cek ketiganya sebelum mengerjakan fitur.
 
 ## 1. Stack Saat Ini
 
@@ -55,13 +59,8 @@ di app `app-plt` (Aplikasi Pelatihan, UIN Suska Riau).
 
 - **Bahasa UI & pesan error:** Bahasa Indonesia.
 - **Import:** gunakan alias `@/...`, bukan path relatif panjang.
-- **Struktur folder:**
-  - `src/routes/_auth/*` — halaman publik/autentikasi (layout `_auth/route.tsx`)
-  - `src/routes/_app/*` — halaman setelah login (layout `_app`)
-  - `src/components/ui` — komponen shadcn
-  - `src/components/icons` — ikon custom
-  - `src/lib` — utilitas dan konstanta
-  - `src/lib/schemas` — skema Zod per domain (mis. `auth.ts`)
+- **Struktur folder:** lihat `ARCHITECTURE.md` (satu-satunya rujukan tata
+  letak kode). Urutan pengerjaan fitur ada di `ROADMAP.md`.
 - **Penamaan skema Zod:** skema (nilai) `xxxSchema` dengan camelCase, tipe
   hasilnya `XxxInput` dengan PascalCase. Contoh:
   `export const loginSchema = z.object({...})` dan
@@ -79,3 +78,4 @@ di app `app-plt` (Aplikasi Pelatihan, UIN Suska Riau).
 | 2026-10-11 | Tambah TanStack Form + Zod untuk form login dan seterusnya | Satu ekosistem TanStack, validasi type-safe dan bisa dipakai ulang di server |
 | 2026-10-11 | Penamaan skema `xxxSchema` dan tipe `XxxInput`; skema di `src/lib/schemas` | Nama menjelaskan isi (aturan vs data) dan skema bisa dipakai bersama client dan server |
 | 2026-10-11 | Dokumen ini ditetapkan sebagai rujukan utama | Menjaga konsistensi keputusan teknis saat fitur/modul bertambah |
+| 2026-10-11 | Struktur folder dipindah ke `ARCHITECTURE.md` (feature-based, skema di `features/<domain>/schemas`); urutan kerja di `ROADMAP.md` | Satu topik satu dokumen, menghindari konflik antar dokumen |

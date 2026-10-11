@@ -129,7 +129,28 @@ menunjukkan status saat submit berjalan.
 Pertanyaan renungan: kenapa memakai `form.Subscribe`, bukan membaca
 `form.state` langsung di komponen? (Petunjuk: re-render.)
 
-- [ ] Belum dikerjakan
+- [~] Sebagian: butir 1-4 selesai (lihat "Perbaikan setelah refactor"), butir 5 belum.
+
+### Refactor A1 (ROADMAP): login ke struktur feature-based
+Dikerjakan setelah Langkah 3, mengikuti [ARCHITECTURE.md](./ARCHITECTURE.md).
+Catatan: path pada Langkah 2 dan 3 di atas adalah kondisi saat itu; sekarang
+sudah pindah.
+
+- [x] Selesai (2026-10-11)
+  - Skema dipindah: `src/lib/schemas/auth.ts` menjadi
+    `src/features/auth/schemas/auth.ts`.
+  - Form dipindah ke `src/features/auth/components/login-form.tsx`
+    (`LoginForm`: `useForm`, `showPassword`, blok `<form>`).
+  - `src/routes/_auth/login.tsx` menjadi tipis: hanya route + `LoginPage`
+    yang merangkai `Logo`, judul, `LoginForm`, dan tombol Google.
+  - Pelajaran: route tipis, logika dan UI fitur tinggal di `features/<domain>`.
+
+### Perbaikan setelah refactor
+- [x] `FieldError` ditampilkan per field (Langkah 4 butir 1-4: `isInvalid`,
+  `data-invalid`, `aria-invalid`, pesan Zod). Dikerjakan oleh pemandu atas
+  permintaan pemilik proyek.
+- [x] Tombol mata password diberi `type="button"`.
+- [ ] Langkah 4 butir 5 (`form.Subscribe` untuk state submit) belum dikerjakan.
 
 ### Langkah 5: Tangani submit
 Akan diisi.

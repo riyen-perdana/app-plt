@@ -20,6 +20,10 @@ import {
   InputGroupInput,
 } from "@/components/ui/input-group"
 
+import { useForm } from "@tanstack/react-form"
+import { loginSchema } from "@/lib/schemas/auth"
+
+
 export const Route = createFileRoute("/_auth/login")({
   head: () => ({ meta: [{ title: `${APP_NAME} - ${APP_INSTITUSI}` }] }),
   component: LoginPage,
@@ -27,68 +31,96 @@ export const Route = createFileRoute("/_auth/login")({
 
 function LoginPage() {
   const [showPassword, setShowPassword] = React.useState(false)
+  const form = useForm({
+    defaultValues: { username: "", password: "" },
+    validators: { onSubmit: loginSchema },
+    onSubmit: async ({ value }) => {
+      console.log(value)
+    }
+  })
+
 
   return (
     <div className="flex w-full max-w-sm flex-col gap-8">
       <Logo />
-      <div className="flex flex-col gap-1">
-        <p className="text-xs text-muted-foreground">
-          Selamat datang di {APP_NAME}
-        </p>
-        <h1 className="text-xl font-semibold">Masuk ke akun Anda</h1>
+      <div className="flex flex-col gap-0">
+        <p className="text-2xl font-semibold">Selamat datang</p>
+        <h1 className="-mt-1 text-lg font-semibold">Masuk ke akun Anda</h1>
       </div>
       <form
         className="flex flex-col gap-5"
-        onSubmit={(event) => event.preventDefault()}
+        onSubmit={(event) => {
+          event.preventDefault()
+          event.stopPropagation()
+          form.handleSubmit()
+        }}
       >
         <FieldGroup>
-          <Field>
-            <FieldLabel htmlFor="identifier">Username atau Email</FieldLabel>
-            <Input
-              id="identifier"
-              name="identifier"
-              type="text"
-              autoComplete="username"
-            />
-          </Field>
-          <Field>
-            <FieldLabel htmlFor="password">Password</FieldLabel>
-            <InputGroup>
-              <InputGroupInput
-                id="password"
-                name="password"
-                type={showPassword ? "text" : "password"}
-                autoComplete="current-password"
-              />
-              <InputGroupAddon align="inline-end">
-                <InputGroupButton
-                  size="icon-xs"
-                  aria-label={
-                    showPassword ? "Sembunyikan password" : "Tampilkan password"
-                  }
-                  onClick={() => setShowPassword((v) => !v)}
-                >
-                  {showPassword ? <EyeOff /> : <Eye />}
-                </InputGroupButton>
-              </InputGroupAddon>
-            </InputGroup>
-          </Field>
+          <form.Field name="username">
+            {(field) => (
+              <Field>
+                <FieldLabel htmlFor={field.name}>Nama Pengguna</FieldLabel>
+                <Input
+                  id={field.name}
+                  name={field.name}
+                  type="text"
+                  placeholder="Nama Pengguna"
+                  autoComplete="username"
+                  value={field.state.value}
+                  onChange={(e) => field.handleChange(e.target.value)}
+                  onBlur={field.handleBlur}
+                />
+              </Field>
+            )}
+          </form.Field>
+          <form.Field name="password">
+            {(field) => (
+              <Field>
+                <FieldLabel htmlFor={field.name}>Kata Sandi</FieldLabel>
+                <InputGroup>
+                  <InputGroupInput
+                    id={field.name}
+                    name={field.name}
+                    type={showPassword ? "text" : "password"}
+                    placeholder="Kata Sandi"
+                    autoComplete="current-password"
+                    value={field.state.value}
+                    onChange={(e) => field.handleChange(e.target.value)}
+                    onBlur={field.handleBlur}
+                  />
+                  <InputGroupAddon align="inline-end">
+                    <InputGroupButton
+                      size="icon-xs"
+                      aria-label={
+                        showPassword
+                          ? "Sembunyikan Kata Sandi"
+                          : "Tampilkan Kata Sandi"
+                      }
+                      onClick={() => setShowPassword((v) => !v)}
+                    >
+                      {showPassword ? <EyeOff /> : <Eye />}
+                    </InputGroupButton>
+                  </InputGroupAddon>
+                </InputGroup>
+              </Field>
+            )}
+          </form.Field>
           <Button type="submit" size="lg" className="w-full">
-            Login
+            Masuk
           </Button>
         </FieldGroup>
         <a
           href="#"
           className="text-xs text-muted-foreground underline-offset-4 hover:underline"
         >
-          Lupa password?
+          Lupa Kata Sandi?
         </a>
       </form>
       <FieldGroup>
         <FieldSeparator>Atau</FieldSeparator>
         <Button type="button" variant="outline" size="lg" className="w-full">
           <GoogleIcon />
-          Masuk dengan Google
+          Masuk dengan Google Workspace
         </Button>
       </FieldGroup>
       <p className="text-xs text-muted-foreground">

@@ -1,6 +1,6 @@
 import * as React from "react"
 import { cn } from "cn"
-import { APP_NAME } from "@/lib/constant"
+import { APP_NAME, APP_INSTITUSI } from "@/lib/constant"
 
 export function Logo({ className, ...props }: React.ComponentProps<"div">) {
   return (
@@ -20,7 +20,10 @@ export function Logo({ className, ...props }: React.ComponentProps<"div">) {
           <path d="M12 3v1" />
         </svg>
       </div>
-      <span className="text-sm font-medium">{APP_NAME}</span>
+      <div className="flex flex-col leading-tight">
+        <span className="text-sm font-medium">{APP_NAME}</span>
+        <span className="text-sm font-medium">{APP_INSTITUSI}</span>
+      </div>
     </div>
   )
 }

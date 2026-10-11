@@ -1,23 +1,33 @@
 import { HeadContent, Scripts, createRootRoute } from "@tanstack/react-router"
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools"
 import { TanStackDevtools } from "@tanstack/react-devtools"
+import { APP_NAME, APP_INSTITUSI } from "@/lib/constant"
 
 import appCss from "../styles.css?url"
 
 export const Route = createRootRoute({
   head: () => ({
     meta: [
+      { charSet: "utf-8" },
+      { name: "viewport", content: "width=device-width, initial-scale=1" },
+      { title: `${APP_NAME} · ${APP_INSTITUSI}` },
       {
-        charSet: "utf-8",
+        name: "description",
+        content:
+          "Aplikasi internal Universitas Islam Negeri Sultan Syarif Kasim Riau.",
       },
+      { name: "robots", content: "noindex, nofollow" },
+      { property: "og:site_name", content: `${APP_NAME}` },
+      { property: "og:locale", content: "id_ID" },
+      { property: "og:type", content: "website" },
+      { property: "og:title", content: `${APP_INSTITUSI}` },
       {
-        name: "viewport",
-        content: "width=device-width, initial-scale=1",
-      },
-      {
-        title: "TanStack Start Starter",
+        property: "og:description",
+        content:
+          "Aplikasi internal Universitas Islam Negeri Sultan Syarif Kasim Riau.",
       },
     ],
+
     links: [
       {
         rel: "stylesheet",
@@ -36,11 +46,11 @@ export const Route = createRootRoute({
 
 function RootDocument({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
         <HeadContent />
       </head>
-      <body>
+      <body suppressHydrationWarning>
         {children}
         <TanStackDevtools
           config={{

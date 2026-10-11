@@ -56,10 +56,10 @@ sungguhan.
 
 ## Checklist
 
-- [ ] Route `/forgot-password` tampil di dalam layout `_auth`
-- [ ] Form berisi satu field email + tombol
-- [ ] Tautan di halaman login mengarah ke halaman baru
-- [ ] Tautan "Kembali ke halaman masuk" berfungsi
-- [ ] Lolos `typecheck`, `lint`, `check`
-- [ ] Tidak ada `console.log` atau import tak terpakai
-- [ ] Catat langkah di `docs/step.md` setelah selesai
+- [x] Route `/forgot-password` tampil di dalam layout `_auth`
+- [x] Form berisi satu field email + tombol
+- [x] Tautan di halaman login mengarah ke halaman baru
+- [x] Tautan "Kembali ke halaman masuk" berfungsi
+- [x] Lolos `typecheck`, `lint`, `check`
+- [x] Tidak ada import tak terpakai; `console.log` di `onSubmit` sengaja disamakan dengan login (placeholder sampai Langkah 5)
+- [x] Catat langkah di `docs/step.md` setelah selesai

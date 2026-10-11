@@ -154,3 +154,22 @@ sudah pindah.
 
 ### Langkah 5: Tangani submit
 Akan diisi.
+
+### Fitur Lupa Kata Sandi (tampilan saja)
+Rencana: [rencana-lupa-password.md](./rencana-lupa-password.md).
+
+- [x] Selesai (2026-10-11)
+  - Route tipis `src/routes/_auth/forgot-password.tsx`: Logo, judul,
+    penjelasan, `ForgotPasswordForm`.
+  - Form `src/features/auth/components/forgot-password-form.tsx`: satu field
+    email (`TextField` dari `useAppForm`) + tombol "Kirim" + tautan kembali
+    ke `/login`.
+  - `forgotPasswordSchema` ditambahkan di `src/features/auth/schemas/auth.ts`
+    (email wajib diisi dan valid). Ini tambahan di luar rencana awal.
+  - Tautan "Lupa Kata Sandi?" di `login-form.tsx` diganti menjadi `Link` ke
+    `/forgot-password`.
+  - `onSubmit` masih `console.log(value)`, sengaja disamakan dengan login;
+    keduanya diganti di Langkah 5.
+  - Lolos `typecheck`, `lint`, `check`, dan sudah dicek manual di browser.
+  - Pelajaran: fitur baru cukup menyalin pola login (route tipis + form di
+    `features/auth`), `TextField` dipakai ulang tanpa perubahan.

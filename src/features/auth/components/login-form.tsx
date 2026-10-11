@@ -1,3 +1,4 @@
+import { Link } from "@tanstack/react-router"
 import { Button } from "@/components/ui/button"
 import { FieldGroup } from "@/components/ui/field"
 import { useAppForm } from "@/features/auth/hooks/use-app-form"
@@ -44,12 +45,12 @@ export function LoginForm() {
           Masuk
         </Button>
       </FieldGroup>
-      <a
-        href="#"
+      <Link
+        to="/forgot-password"
         className="text-xs text-muted-foreground underline-offset-4 hover:underline"
       >
         Lupa Kata Sandi?
-      </a>
+      </Link>
     </form>
   )
 }

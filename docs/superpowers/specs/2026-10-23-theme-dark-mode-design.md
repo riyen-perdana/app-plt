@@ -94,11 +94,17 @@ Belum ada framework tes (Vitest ada di ROADMAP A4).
   - Menghapus atau merusak kunci di `localStorage` tidak memunculkan error di console.
 - Unit test `applyTheme` ditunda sampai A4.
 
-## Urutan kerja (mode belajar: user menulis, Claude memandu)
+## Urutan kerja (mode belajar)
 
-1. Perbarui `TECH-STACK.md`, lalu `npm i zustand` (pin versi).
-2. `THEME_STORAGE_KEY`, `types.ts`, `store.ts`.
-3. `apply-theme.ts`, `theme-sync.tsx`.
-4. `theme-script.tsx`; pasang `ThemeScript` dan `ThemeSync` di `__root.tsx`.
-5. Pasang shadcn `dropdown-menu`, tulis `theme-toggle.tsx`, pasang di layout `_auth`.
-6. Verifikasi, perbarui `ARCHITECTURE.md`, commit.
+Pembagian: semua file `.md` ditulis dan diperbarui Claude; kode baru ditulis
+user, Claude memandu.
+
+1. **Claude:** perbarui `TECH-STACK.md` (baris Zustand, aturan state client,
+   Log Keputusan). **User:** `npm i zustand` (pin versi).
+2. **User:** `THEME_STORAGE_KEY`, `types.ts`, `store.ts`.
+3. **User:** `apply-theme.ts`, `theme-sync.tsx`.
+4. **User:** `theme-script.tsx`; pasang `ThemeScript` dan `ThemeSync` di `__root.tsx`.
+5. **User:** pasang shadcn `dropdown-menu`, tulis `theme-toggle.tsx`, pasang di layout `_auth`.
+6. **User:** verifikasi manual dan jalankan `typecheck`/`lint`/`check`.
+   **Claude:** perbarui `ARCHITECTURE.md`, `ROADMAP.md` bila perlu, dan catat
+   langkah di `step.md`. Commit setelah semuanya lolos.

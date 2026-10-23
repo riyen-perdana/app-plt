@@ -2,6 +2,8 @@ import { HeadContent, Scripts, createRootRoute } from "@tanstack/react-router"
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools"
 import { TanStackDevtools } from "@tanstack/react-devtools"
 import { APP_NAME, APP_INSTITUSI } from "@/lib/constant"
+import { ThemeSync } from "@/features/theme/components/theme-sync"
+import { themeScript } from "@/features/theme/theme-script"
 
 import appCss from "../styles.css?url"
 
@@ -34,6 +36,8 @@ export const Route = createRootRoute({
         href: appCss,
       },
     ],
+
+    scripts: [{ children: themeScript }],
   }),
   notFoundComponent: () => (
     <main className="container mx-auto p-4 pt-16">
@@ -51,6 +55,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <HeadContent />
       </head>
       <body suppressHydrationWarning>
+        <ThemeSync />
         {children}
         <TanStackDevtools
           config={{

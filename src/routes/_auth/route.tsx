@@ -1,4 +1,5 @@
 import { createFileRoute, Outlet } from "@tanstack/react-router"
+import { ThemeToggle } from "@/features/theme/components/theme-toggle"
 
 export const Route = createFileRoute("/_auth")({
   component: AuthLayout,
@@ -24,7 +25,10 @@ function AuthLayout() {
           <span className="size-1.5 rounded-full bg-muted-foreground/40" />
         </div>
       </aside>
-      <main className="flex items-center justify-center px-6 py-12">
+      <main className="relative flex items-center justify-center px-6 py-12">
+        <div className="absolute top-4 right-4">
+          <ThemeToggle />
+        </div>
         <Outlet />
       </main>
     </div>

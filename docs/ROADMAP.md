@@ -36,6 +36,7 @@ Status: `[ ]` belum, `[~]` sedang, `[x]` selesai.
 | C3 | Pengumpulan teks UI di satu tempat | [ ] | |
 | C4 | Deployment (target, env, backup database) | [ ] | |
 | C5 | README | [ ] | Diperbarui bertahap, dirapikan di akhir |
+| C6 | Tema dark mode (light/dark/system) | [x] | Zustand `persist`, skrip anti-kedip. Lihat `features/theme` di ARCHITECTURE.md |
 
 ## Aturan kerja per item
 

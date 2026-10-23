@@ -173,3 +173,31 @@ Rencana: [rencana-lupa-password.md](./rencana-lupa-password.md).
   - Lolos `typecheck`, `lint`, `check`, dan sudah dicek manual di browser.
   - Pelajaran: fitur baru cukup menyalin pola login (route tipis + form di
     `features/auth`), `TextField` dipakai ulang tanpa perubahan.
+
+### Fitur Tema Dark Mode (Zustand)
+Spec: [2026-10-23-theme-dark-mode-design.md](./superpowers/specs/2026-10-23-theme-dark-mode-design.md).
+Rencana: [2026-10-23-theme-dark-mode.md](./superpowers/plans/2026-10-23-theme-dark-mode.md).
+
+- [x] Selesai (2026-10-23)
+  - Task 1, fondasi state: Zustand ^5.0.15 dicatat di `TECH-STACK.md` lalu
+    dipasang; `THEME_STORAGE_KEY` di `lib/constant.ts`; `types.ts`
+    (`THEMES`, `Theme`, `isTheme`), `apply-theme.ts`, dan `store.ts` di
+    `src/features/theme/`.
+  - Task 2, penerapan ke halaman: `ThemeSync` (efek client yang menerapkan
+    tema dan memantau preferensi OS), `themeScript` (skrip inline di
+    `head().scripts`), dipasang di `routes/__root.tsx`.
+  - Task 3, tombol: `ThemeToggle` (dropdown shadcn dengan radio Terang/Gelap/
+    Sistem) dipasang di layout `routes/_auth/route.tsx`.
+  - Lolos `typecheck`, `lint`, `check`.
+  - Pelajaran:
+    - `create<State>()(persist(...))` memakai tanda kurung ganda agar tipe
+      middleware terbaca TypeScript. `partialize` membatasi apa yang disimpan,
+      `merge` menolak nilai rusak lewat `isTheme`.
+    - Zustand `persist` hanya terbaca setelah React hidrasi, sehingga halaman
+      bisa berkedip. Skrip inline sinkron di `<head>` memasang class `dark`
+      sebelum render untuk mencegahnya.
+    - Ikon matahari/bulan ditukar lewat CSS (`dark:hidden`, `hidden dark:block`),
+      bukan kondisi JS, agar HTML server dan client sama (tanpa hydration
+      mismatch).
+    - Type guard (`value is Theme`) dipakai untuk menyempitkan `string` dari
+      `onValueChange` menjadi `Theme` tanpa `as`.

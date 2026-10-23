@@ -20,6 +20,13 @@ src/
   lib/               # util, konstanta, konfigurasi lintas fitur
 ```
 
+Contoh fitur lintas halaman: `features/theme` (tema light/dark/system). Isinya
+`store.ts` (Zustand), `apply-theme.ts`, `theme-script.ts`, `types.ts`, dan
+`components/` (`ThemeSync`, `ThemeToggle`). `routes/__root.tsx` memasang
+`ThemeSync` dan `themeScript`, `routes/_auth/route.tsx` memasang `ThemeToggle`;
+tidak ada logika tema di `routes/`. Komponen lain yang butuh tema cukup
+mengimpor `ThemeToggle` atau `useThemeStore`.
+
 Aturan dependensi: `routes` -> `features` -> `components`/`lib`. Fitur tidak boleh mengimpor dari fitur lain secara langsung; hal yang dipakai bersama dipindah ke `components/` atau `lib/`.
 
 ## 2. Aturan clean code

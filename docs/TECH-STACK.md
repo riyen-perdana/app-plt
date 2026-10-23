@@ -32,6 +32,7 @@ di app `app-plt` (Aplikasi Pelatihan, UIN Suska Riau).
 | Devtools | TanStack Devtools / Router Devtools | latest | Hanya development |
 | Form | TanStack Form (`@tanstack/react-form`) | ^1.33.5 | Seluruh state & submit form |
 | Validasi | Zod (`zod`) | ^4.6.5 | Skema validasi tunggal untuk client & server |
+| State UI client | Zustand (`zustand`) | ^5.0.15 | State sisi client yang dibagi lintas komponen (mulai dari tema light/dark/system); `persist` ke `localStorage` |
 
 ## 2. Aturan Keputusan
 
@@ -54,6 +55,11 @@ di app `app-plt` (Aplikasi Pelatihan, UIN Suska Riau).
    Jangan hardcode di komponen.
 8. **Dependensi baru** → harus dicatat di dokumen ini (area, peran, alasan)
    sebelum dipasang. Utamakan yang sudah ada di stack.
+9. **State UI sisi client** → state yang dibagi lintas komponen dan murni milik
+   browser (tema, panel terbuka, dll.) memakai Zustand, satu store per fitur di
+   `src/features/<domain>/store.ts`. Data dari server tetap lewat loader/server
+   function (aturan 3), state form tetap TanStack Form (aturan 1), dan state
+   lokal satu komponen cukup `useState`. Jangan menaruh data server di Zustand.
 
 ## 3. Konvensi
 
@@ -79,3 +85,4 @@ di app `app-plt` (Aplikasi Pelatihan, UIN Suska Riau).
 | 2026-10-11 | Penamaan skema `xxxSchema` dan tipe `XxxInput`; skema di `src/lib/schemas` | Nama menjelaskan isi (aturan vs data) dan skema bisa dipakai bersama client dan server |
 | 2026-10-11 | Dokumen ini ditetapkan sebagai rujukan utama | Menjaga konsistensi keputusan teknis saat fitur/modul bertambah |
 | 2026-10-11 | Struktur folder dipindah ke `ARCHITECTURE.md` (feature-based, skema di `features/<domain>/schemas`); urutan kerja di `ROADMAP.md` | Satu topik satu dokumen, menghindari konflik antar dokumen |
+| 2026-10-23 | Tambah Zustand ^5.0.15 untuk state UI client, dimulai dari tema dark mode (light/dark/system, disimpan di `localStorage`); aturan 9 | Store kecil tanpa provider, middleware `persist` bawaan, cocok untuk state UI yang dibagi lintas komponen. Spec: `docs/superpowers/specs/2026-10-23-theme-dark-mode-design.md` |

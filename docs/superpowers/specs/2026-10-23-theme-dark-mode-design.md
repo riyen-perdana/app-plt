@@ -26,11 +26,11 @@ server/akun pengguna, tema selain light/dark.
 
 ```
 src/features/theme/
-  types.ts                   # type Theme = "light" | "dark" | "system"
+  types.ts                   # THEMES, type Theme, guard isTheme
   store.ts                   # store Zustand (persist)
-  apply-theme.ts             # resolve tema akhir + toggle class "dark" di <html>
+  apply-theme.ts             # DARK_MEDIA_QUERY + applyTheme: class "dark" di <html>
+  theme-script.ts            # string skrip inline anti-kedip (untuk head().scripts)
   components/
-    theme-script.tsx         # skrip inline anti-kedip untuk <head>
     theme-sync.tsx           # efek client: terapkan tema, pantau preferensi OS
     theme-toggle.tsx         # tombol ikon + dropdown
 ```
@@ -38,7 +38,8 @@ src/features/theme/
 Perubahan di luar folder fitur:
 
 - `src/lib/constant.ts`: tambah `THEME_STORAGE_KEY`.
-- `src/routes/__root.tsx`: pasang `ThemeScript` di `<head>` dan `ThemeSync` di `<body>`.
+- `src/routes/__root.tsx`: tambahkan `themeScript` ke `head().scripts` (dirender
+  `HeadContent` di `<head>`) dan pasang `ThemeSync` di `<body>`.
 - `src/routes/_auth/route.tsx`: pasang `ThemeToggle` di pojok kanan atas.
 - `src/components/ui/dropdown-menu.tsx`: ditambahkan lewat CLI shadcn.
 - `docs/TECH-STACK.md`: baris Zustand, aturan state client, entri Log Keputusan.
@@ -57,7 +58,8 @@ Perubahan di luar folder fitur:
 - **`ThemeSync`.** Memanggil `applyTheme` setiap `theme` berubah. Saat `system`,
   memasang listener `change` pada `matchMedia` dan melepasnya saat tema lain
   dipilih atau komponen di-unmount.
-- **`ThemeScript`.** Skrip inline sinkron: baca `localStorage[THEME_STORAGE_KEY]`,
+- **`themeScript`.** String skrip inline sinkron (bukan komponen React, agar
+  tidak memicu peringatan React 19 soal `<script>` di komponen): baca `localStorage[THEME_STORAGE_KEY]`,
   ambil `state.theme`, tentukan dark/tidak, pasang class `dark`. Dibungkus
   `try/catch`; gagal berarti `system`. Kunci disisipkan dari konstanta yang sama
   dengan store agar tidak menyimpang.
@@ -68,7 +70,7 @@ Perubahan di luar folder fitur:
 
 ## Alur data
 
-1. Muat halaman: `ThemeScript` memasang class `dark` sebelum render pertama.
+1. Muat halaman: `themeScript` memasang class `dark` sebelum render pertama.
 2. Hydration: store mulai dari `system`, `persist` memuat nilai tersimpan,
    `ThemeSync` memanggil `applyTheme` dengan hasil yang sama seperti skrip.
 3. Pengguna memilih tema: `setTheme` → `persist` menyimpan → `ThemeSync` menerapkan.
@@ -103,7 +105,8 @@ user, Claude memandu.
    Log Keputusan). **User:** `npm i zustand` (pin versi).
 2. **User:** `THEME_STORAGE_KEY`, `types.ts`, `store.ts`.
 3. **User:** `apply-theme.ts`, `theme-sync.tsx`.
-4. **User:** `theme-script.tsx`; pasang `ThemeScript` dan `ThemeSync` di `__root.tsx`.
+4. **User:** `theme-script.ts`; pasang `themeScript` (di `head().scripts`) dan
+   `ThemeSync` di `__root.tsx`.
 5. **User:** pasang shadcn `dropdown-menu`, tulis `theme-toggle.tsx`, pasang di layout `_auth`.
 6. **User:** verifikasi manual dan jalankan `typecheck`/`lint`/`check`.
    **Claude:** perbarui `ARCHITECTURE.md`, `ROADMAP.md` bila perlu, dan catat

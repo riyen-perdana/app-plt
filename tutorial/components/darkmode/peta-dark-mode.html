@@ -1,0 +1,504 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>[hidden]{display:none!important}</style>
+<title>Peta Kerja Dark Mode</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap">
+<style>
+/* Konsep layout: panel kontrol menempel di atas, lini masa kartu di kiri, panel keadaan menempel di kanan. Kartu berwarna per file; denyut turun di penghubung, lalu baris kode menyala satu per satu. */
+:root{
+  --display:'Bricolage Grotesque','Segoe UI',system-ui,sans-serif;
+  --sans:'IBM Plex Sans','Segoe UI',system-ui,sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,Consolas,monospace;
+
+  --bg:oklch(0.975 0.006 275);
+  --surface:oklch(1 0 0);
+  --fg:oklch(0.22 0.02 275);
+  --muted:oklch(0.5 0.02 275);
+  --rule:oklch(0.9 0.01 275);
+  --accent:oklch(0.5 0.2 278);
+  --on-line:#fff;
+
+  /* token kartu: hue diisi per file lewat --h */
+  --line-l:.56; --line-c:.15;
+  --card-l:.975; --card-c:.018;
+  --ink-l:.36; --ink-c:.11;
+  --chip-l:.92; --chip-c:.05;
+  --code-l:.945; --code-c:.025;
+  --str-l:.46; --str-c:.12;
+
+  /* pratinjau app-plt: nilai asli dari styles.css */
+  --pv-bg:oklch(1 0 0); --pv-fg:oklch(0.145 0.008 326); --pv-card:oklch(1 0 0);
+  --pv-border:oklch(0.922 0.005 325.62); --pv-pri:oklch(0.212 0.019 322.12);
+  --pv-pri-fg:oklch(0.985 0 0); --pv-muted:oklch(0.542 0.034 322.5);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:oklch(0.17 0.016 275); --surface:oklch(0.215 0.02 275); --fg:oklch(0.94 0.01 275);
+    --muted:oklch(0.72 0.02 275); --rule:oklch(0.31 0.02 275); --accent:oklch(0.76 0.14 278);
+    --on-line:oklch(0.18 0.03 275);
+    --line-l:.76; --line-c:.14; --card-l:.24; --card-c:.04; --ink-l:.88; --ink-c:.09;
+    --chip-l:.34; --chip-c:.07; --code-l:.185; --code-c:.03; --str-l:.8; --str-c:.11;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:oklch(0.17 0.016 275); --surface:oklch(0.215 0.02 275); --fg:oklch(0.94 0.01 275);
+  --muted:oklch(0.72 0.02 275); --rule:oklch(0.31 0.02 275); --accent:oklch(0.76 0.14 278);
+  --on-line:oklch(0.18 0.03 275);
+  --line-l:.76; --line-c:.14; --card-l:.24; --card-c:.04; --ink-l:.88; --ink-c:.09;
+  --chip-l:.34; --chip-c:.07; --code-l:.185; --code-c:.03; --str-l:.8; --str-c:.11;
+  color-scheme:dark;
+}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font:15px/1.55 var(--sans);margin:0;
+  padding-block:32px 72px;
+  padding-left:max(16px,env(safe-area-inset-left,0px));
+  padding-right:max(16px,env(safe-area-inset-right,0px))}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--bg);z-index:20}
+.page{max-width:1240px;margin:0 auto;display:grid;gap:22px}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+h1,h2,h3,h4,p{margin:0}
+
+/* ---------- kepala ---------- */
+.top{display:grid;gap:8px}
+.eyebrow{font:500 12px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+h1{font:700 clamp(30px,5vw,46px)/1.05 var(--display);letter-spacing:-.02em;text-wrap:balance}
+.lede{max-width:68ch;color:var(--muted)}
+
+/* ---------- panel kontrol ---------- */
+#sentinel{height:0;margin-bottom:-22px}
+.ctl{position:sticky;top:calc(env(safe-area-inset-top,0px) + 8px);z-index:15;background:var(--surface);border:1px solid var(--rule);border-radius:14px;padding:14px;display:grid;gap:14px;transition:padding .2s,box-shadow .2s}
+.scname{display:none;font:600 13px var(--display);white-space:nowrap}
+.ctl.compact{display:flex;align-items:center;gap:14px;padding:8px 12px;box-shadow:0 6px 24px -8px color-mix(in oklch,var(--fg) 30%,transparent)}
+.ctl.compact .ctl-row{display:contents}
+.ctl.compact .seg,.ctl.compact .legend{display:none}
+.ctl.compact .scname{display:block;order:0}
+.ctl.compact .prog{order:1;flex:1;min-width:0}
+.ctl.compact .player{order:2}
+.ctl.compact .stepno{min-width:0}
+.ctl.compact .btn{width:34px;height:34px}
+.ctl-row{display:flex;flex-wrap:wrap;gap:12px 18px;align-items:center;justify-content:space-between}
+.seg{display:flex;flex-wrap:wrap;gap:6px}
+.seg button{border:1px solid var(--rule);background:transparent;border-radius:999px;padding:6px 14px;font-size:13.5px}
+.seg button[aria-pressed="true"]{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+.player{display:flex;align-items:center;gap:8px}
+.btn{width:38px;height:38px;border-radius:10px;border:1px solid var(--rule);background:transparent;display:grid;place-items:center}
+.btn.main{background:var(--accent);border-color:var(--accent);color:var(--on-line)}
+.btn svg{width:16px;height:16px;fill:currentColor}
+.btn:disabled{opacity:.35;cursor:default}
+.stepno{font:500 13px var(--mono);color:var(--muted);min-width:9ch;text-align:right;font-variant-numeric:tabular-nums}
+.prog{display:flex;gap:4px}
+.prog button{flex:1;height:10px;border:0;padding:0;border-radius:5px;background:var(--rule);transition:background .3s,transform .3s}
+.prog button.done{background:oklch(var(--line-l) var(--line-c) var(--h))}
+.prog button.cur{background:oklch(var(--line-l) var(--line-c) var(--h));transform:scaleY(1.7)}
+.legend{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font:500 11.5px var(--mono);padding:3px 8px;border-radius:6px;background:oklch(var(--chip-l) var(--chip-c) var(--h));color:oklch(var(--ink-l) var(--ink-c) var(--h));border:1px solid oklch(var(--line-l) var(--line-c) var(--h) / .45)}
+
+/* ---------- kartu ---------- */
+.hue{
+  --c-line:oklch(var(--line-l) var(--line-c) var(--h));
+  --c-bg:oklch(var(--card-l) var(--card-c) var(--h));
+  --c-ink:oklch(var(--ink-l) var(--ink-c) var(--h));
+  --c-chip:oklch(var(--chip-l) var(--chip-c) var(--h));
+  --c-code:oklch(var(--code-l) var(--code-c) var(--h));
+  --c-str:oklch(var(--str-l) var(--str-c) calc(var(--h) + 150));
+}
+.actor{--c-line:var(--muted);--c-bg:var(--surface);--c-ink:var(--fg);--c-chip:var(--rule);--c-code:var(--bg);--c-str:var(--accent)}
+.card{background:var(--c-bg);border:1.5px solid color-mix(in oklch,var(--c-line) 50%,transparent);border-radius:12px;padding:14px;display:grid;gap:8px;min-width:0;transition:opacity .4s,border-color .4s;scroll-margin-block:92px 24px}
+.card h3{font:600 17px/1.25 var(--display);color:var(--c-ink);text-wrap:balance}
+.card p{font-size:13.5px;max-width:70ch}
+.card p code{font:500 12px var(--mono);background:var(--c-chip);padding:1px 5px;border-radius:4px}
+.ch{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.ch::after{margin-left:auto;font:700 10.5px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--c-ink)}
+.num{flex:none;width:26px;height:26px;border-radius:50%;background:var(--c-line);color:var(--on-line);font:700 12px var(--mono);display:grid;place-items:center}
+.file{font:500 12.5px var(--mono);background:var(--c-chip);color:var(--c-ink);padding:3px 9px;border-radius:6px;min-width:0;overflow-wrap:anywhere}
+.file .dir{opacity:.62}
+.file b{font-weight:700}
+.tag-actor{font:500 10.5px var(--mono);color:var(--muted)}
+.card.upcoming{opacity:.62}
+.card.active{border-color:var(--c-line);animation:glow 1.7s ease-out infinite}
+.card.active .ch::after{content:"● berjalan"}
+.card.done .ch::after{content:"✓ selesai"}
+@keyframes glow{0%{box-shadow:0 0 0 0 color-mix(in oklch,var(--c-line) 60%,transparent)}100%{box-shadow:0 0 0 14px transparent}}
+
+.code{background:var(--c-code);border-radius:8px;padding:8px 0;overflow-x:auto;font:12.5px/1.7 var(--mono)}
+.ln{display:flex;min-width:max-content;padding-right:14px;position:relative;transition:background .25s}
+.ln i{flex:none;width:38px;padding-right:12px;text-align:right;font-style:normal;color:var(--muted);user-select:none}
+.ln span{white-space:pre}
+.ln.hl{background:color-mix(in oklch,var(--c-line) 17%,transparent);box-shadow:inset 3px 0 var(--c-line)}
+.ln.hl i{color:var(--c-ink);font-weight:700}
+.ln.gap{color:var(--muted);line-height:1}
+.ln em{font-style:normal}
+.ln .k{color:var(--c-ink);font-weight:700}
+.ln .s{color:var(--c-str)}
+.ln .c{color:var(--muted)}
+/* baris menyala satu per satu di kartu yang sedang berjalan */
+.ln.hl.pending{background:color-mix(in oklch,var(--c-line) 6%,transparent);box-shadow:inset 3px 0 color-mix(in oklch,var(--c-line) 30%,transparent)}
+.ln.hl.pending span{opacity:.6}
+.ln.hl.now{background:color-mix(in oklch,var(--c-line) 40%,transparent);box-shadow:inset 3px 0 var(--c-line),0 0 18px -2px var(--c-line)}
+.ln.hl.now i::before,.ln.hl.ran i::before{position:absolute;left:8px;color:var(--c-ink);font-size:10px}
+.ln.hl.now i::before{content:"▶"}
+.ln.hl.ran i::before{content:"✓"}
+
+/* ---------- lini masa ---------- */
+.a-wrap{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:24px;align-items:start}
+.a-list{list-style:none;margin:0;padding:0}
+.a-side{position:sticky;top:calc(env(safe-area-inset-top,0px) + 82px)}
+.link{display:flex;align-items:center;gap:14px;height:56px;padding-left:25px;list-style:none}
+.rail{position:relative;width:3px;height:100%;border-radius:2px;background:var(--rule);flex:none;transition:background .4s}
+.link.done .rail{background:linear-gradient(oklch(var(--line-l) var(--line-c) var(--from)),oklch(var(--line-l) var(--line-c) var(--to)))}
+.dot{position:absolute;left:50%;top:0;width:12px;height:12px;margin-left:-6px;border-radius:50%;background:oklch(var(--line-l) var(--line-c) var(--to));box-shadow:0 0 12px 3px oklch(var(--line-l) var(--line-c) var(--to) / .65);opacity:0}
+.link.run .dot{animation:travel .95s ease-in-out forwards}
+@keyframes travel{0%{top:0;opacity:0}15%{opacity:1}85%{opacity:1}100%{top:calc(100% - 12px);opacity:0}}
+.llabel{font:500 12px var(--mono);color:var(--muted)}
+.link.done .llabel{color:var(--fg)}
+
+/* ---------- panel keadaan ---------- */
+.state{background:var(--surface);border:1px solid var(--rule);border-radius:14px;padding:14px;display:grid;gap:14px}
+.state h4{font:600 11.5px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.state dl{margin:0;display:grid;gap:8px}
+.state .row{display:grid;gap:2px;padding:6px 8px;border-radius:8px;min-width:0}
+.state dt{font:500 11.5px var(--mono);color:var(--muted)}
+.state dd{margin:0;font:500 12.5px var(--mono);overflow-wrap:anywhere}
+.state .row.flash{animation:flash 1.4s ease-out}
+@keyframes flash{0%{background:color-mix(in oklch,var(--accent) 38%,transparent)}100%{background:transparent}}
+.pv{border:1px solid var(--pv-border);background:var(--pv-bg);color:var(--pv-fg);border-radius:12px;padding:14px;display:grid;gap:10px;transition:background-color .6s,color .6s,border-color .6s}
+.pv.dk{--pv-bg:oklch(0.145 0.008 326);--pv-fg:oklch(0.985 0 0);--pv-card:oklch(0.212 0.019 322.12);--pv-border:oklch(1 0 0 / 14%);--pv-pri:oklch(0.922 0.005 325.62);--pv-pri-fg:oklch(0.212 0.019 322.12);--pv-muted:oklch(0.711 0.019 323.02)}
+.pv-label{font:500 10.5px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--pv-muted)}
+.pv-card{background:var(--pv-card);border:1px solid var(--pv-border);border-radius:10px;padding:12px;display:grid;gap:8px;transition:background-color .6s,border-color .6s}
+.pv-card b{font:600 14px var(--display)}
+.pv-card small{font-size:12px;color:var(--pv-muted)}
+.pv-in{height:28px;border:1px solid var(--pv-border);border-radius:6px}
+.pv-btn{background:var(--pv-pri);color:var(--pv-pri-fg);border-radius:6px;text-align:center;font:600 12px var(--sans);padding:6px;transition:background-color .6s,color .6s}
+
+.view-note{font-size:13.5px;color:var(--muted);max-width:75ch}
+.foot{font-size:12.5px;color:var(--muted);border-top:1px solid var(--rule);padding-top:14px;display:grid;gap:4px;max-width:90ch}
+
+@media (max-width:980px){
+  .a-wrap{grid-template-columns:minmax(0,1fr)}
+  .a-side{position:static;order:-1}
+}
+@media (max-width:720px){
+  .ctl-row .player{margin-left:auto}
+}
+@media (prefers-reduced-motion:reduce){
+  .card.active{animation:none;box-shadow:0 0 0 3px color-mix(in oklch,var(--c-line) 45%,transparent)}
+  .link.run .dot{animation:none;opacity:1;top:calc(100% - 12px)}
+  .state .row.flash{animation:none}
+}
+</style>
+</head>
+<body>
+
+<div class="page">
+  <header class="top">
+    <p class="eyebrow">app-plt · src/features/theme</p>
+    <h1>Peta Kerja Dark Mode</h1>
+    <p class="lede">Tekan putar dan ikuti denyutnya. Titik bercahaya turun lewat penghubung ke kartu berikutnya, lalu baris kode yang dijalankan menyala satu per satu. Warna kartu mengikuti file-nya, jadi Anda bisa mengenali file yang sama di langkah mana pun.</p>
+  </header>
+
+  <div id="sentinel" aria-hidden="true"></div>
+  <section class="ctl" id="ctl" aria-label="Kontrol">
+    <span class="scname" id="scname"></span>
+    <div class="ctl-row">
+      <div class="seg" id="seg" role="group" aria-label="Skenario"></div>
+      <div class="player">
+        <button class="btn" id="prev" aria-label="Langkah sebelumnya"><svg viewBox="0 0 16 16"><path d="M11 2 4 8l7 6z"/></svg></button>
+        <button class="btn main" id="play" aria-label="Putar atau jeda"></button>
+        <button class="btn" id="next" aria-label="Langkah berikutnya"><svg viewBox="0 0 16 16"><path d="m5 2 7 6-7 6z"/></svg></button>
+        <span class="stepno" id="stepno"></span>
+      </div>
+    </div>
+    <div class="prog" id="prog"></div>
+    <div class="legend" id="legend" aria-label="Warna per file"></div>
+  </section>
+
+  <p class="view-note" id="viewnote"></p>
+  <main id="stage"></main>
+
+  <aside class="foot">
+    <p>Kode di kartu diambil dari file asli pada commit terakhir, lengkap dengan nomor barisnya. Isi string di <b>theme-script.ts</b> aslinya satu baris panjang, di sini diformat ulang (ditandai ↳) agar terbaca.</p>
+    <p>Nilai awal di panel keadaan adalah contoh skenario, bukan data nyata dari peramban Anda.</p>
+  </aside>
+</div>
+
+<div class="state" id="state" hidden>
+  <h4>Keadaan saat ini</h4>
+  <dl>
+    <div class="row" data-k="ls"><dt>localStorage["app-plt-theme"]</dt><dd></dd></div>
+    <div class="row" data-k="store"><dt>useThemeStore → theme</dt><dd></dd></div>
+    <div class="row" data-k="os"><dt>OS · prefers-color-scheme</dt><dd></dd></div>
+    <div class="row" data-k="html"><dt>&lt;html&gt;</dt><dd></dd></div>
+    <div class="row" data-k="cat"><dt>Warna yang tampil</dt><dd></dd></div>
+  </dl>
+  <div class="pv" id="pv">
+    <span class="pv-label">Pratinjau tampilan app-plt</span>
+    <div class="pv-card"><b>Aplikasi Pelatihan</b><small>Masuk ke akun Anda</small><div class="pv-in"></div><div class="pv-btn">Masuk</div></div>
+  </div>
+</div>
+
+<script>
+(function(){
+'use strict';
+var $=function(s,r){return (r||document).querySelector(s)};
+var $$=function(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s))};
+var reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* ================= DATA ================= */
+var F={
+  root:{dir:'src/routes/',name:'__root.tsx',h:278},
+  constant:{dir:'src/lib/',name:'constant.ts',h:105},
+  script:{dir:'src/features/theme/',name:'theme-script.ts',h:28},
+  apply:{dir:'src/features/theme/',name:'apply-theme.ts',h:150},
+  sync:{dir:'src/features/theme/components/',name:'theme-sync.tsx',h:240},
+  toggle:{dir:'src/features/theme/components/',name:'theme-toggle.tsx',h:350},
+  store:{dir:'src/features/theme/',name:'store.ts',h:318},
+  types:{dir:'src/features/theme/',name:'types.ts',h:192},
+  css:{dir:'src/',name:'styles.css',h:70},
+  os:{dir:'',name:'Peramban + Sistem Operasi',h:260,actor:true}
+};
+var G='gap';
+var BASE={
+  root:[[5,'import { ThemeSync } from "@/features/theme/components/theme-sync"'],[6,'import { themeScript } from "@/features/theme/theme-script"'],G,[40,'    scripts: [{ children: themeScript }],',1],G,[57,'      <body suppressHydrationWarning>'],[58,'        <ThemeSync />',1]],
+  constant:[[1,'export const APP_NAME = "Aplikasi Pelatihan"'],G,[3,'export const THEME_STORAGE_KEY = "app-plt-theme"',1]],
+  script:[[1,'import { THEME_STORAGE_KEY } from "@/lib/constant"'],[2,'import { DARK_MEDIA_QUERY } from "./apply-theme"'],[4,'export const themeScript = `…`   // isi string, diformat di bawah'],
+    ['↳','(function () {'],['↳','  var t = "system";'],['↳','  try {'],
+    ['↳','    var v = JSON.parse(localStorage.getItem("app-plt-theme")).state.theme;',1],
+    ['↳','    if (v === "light" || v === "dark") t = v;',1],
+    ['↳','  } catch (e) {}'],
+    ['↳','  var d = t === "dark" || (t === "system" && matchMedia("(prefers-color-scheme: dark)").matches);',1],
+    ['↳','  document.documentElement.classList.toggle("dark", d);',1],
+    ['↳','})()']],
+  css:[[6,'@custom-variant dark (&:is(.dark *));'],G,[51,':root {'],[52,'    --background: oklch(1 0 0);'],G,[86,'.dark {',1],[87,'    --background: oklch(0.145 0.008 326);',1],[88,'    --foreground: oklch(0.985 0 0);',1],G,[124,'  body {'],[125,'    @apply bg-background text-foreground;',1]],
+  store:[[12,'export const useThemeStore = create<ThemeState>()('],[13,'  persist('],[14,'    (set) => ({'],[15,'      theme: "system",'],[16,'      setTheme: (theme) => set({ theme }),'],[17,'    }),'],[18,'    {'],[19,'      name: THEME_STORAGE_KEY,'],G,[21,'      merge: (persisted, current) => {'],[22,'        const theme = (persisted as Partial<ThemeState> | undefined)?.theme'],[23,'        return { ...current, theme: isTheme(theme) ? theme : current.theme }'],[24,'      },']],
+  types:[[1,'export const THEMES = ["light", "dark", "system"] as const'],G,[5,'export function isTheme(value: unknown): value is Theme {'],[6,'  return THEMES.some((theme) => theme === value)'],[7,'}']],
+  sync:[[5,'export function ThemeSync() {'],[6,'  const theme = useThemeStore((state) => state.theme)'],[7,''],[8,'  useEffect(() => {'],[9,'    applyTheme(theme)'],[10,'    if (theme !== "system") return'],[11,''],[12,'    const mediaQuery = window.matchMedia(DARK_MEDIA_QUERY)'],[13,'    const handleChange = () => applyTheme(theme)'],[14,'    mediaQuery.addEventListener("change", handleChange)'],[15,'    return () => mediaQuery.removeEventListener("change", handleChange)'],[16,'  }, [theme])']],
+  apply:[[3,'export const DARK_MEDIA_QUERY = "(prefers-color-scheme: dark)"'],G,[5,'export function applyTheme(theme: Theme) {'],[6,'  const isDark ='],[7,'    theme === "dark" ||'],[8,'    (theme === "system" && window.matchMedia(DARK_MEDIA_QUERY).matches)'],[9,'  document.documentElement.classList.toggle("dark", isDark)'],[10,'}']],
+  toggleA:[[39,'        <DropdownMenuRadioGroup'],[40,'          value={theme}'],[41,'          onValueChange={(value) => {'],[42,'            if (isTheme(value)) setTheme(value)'],[43,'          }}']],
+  toggleB:[[34,'          <Sun className="dark:hidden" />'],[35,'          <Moon className="hidden dark:block" />']],
+  os:[['·','// Pengaturan Windows → Warna → Mode: Gelap'],['·','window.matchMedia("(prefers-color-scheme: dark)")',1],['·','  // .matches berubah, event "change" ditembakkan',1]]
+};
+function mk(base,nums){
+  return base.map(function(x){
+    if(x===G) return {gap:1};
+    var hl=!!x[2]||(nums&&nums.indexOf(x[0])>-1);
+    return {n:x[0],t:x[1],hl:hl};
+  });
+}
+function lsJson(t){return '{"state":{"theme":"'+t+'"},"version":0}'}
+
+var SCENARIOS=[
+{id:'load',label:'Halaman dimuat',
+ note:'Pengguna sudah pernah memilih Gelap. Ia membuka ulang aplikasi. Perhatikan bahwa warna sudah benar sebelum React sempat berjalan.',
+ initial:{ls:lsJson('dark'),store:'system',os:'light',html:'',cat:'terang'},
+ steps:[
+ {f:'root',t:'Root memasang dua hal',x:'Saat HTML disusun, <code>__root.tsx</code> menaruh skrip tema di <code>&lt;head&gt;</code> dan komponen <code>ThemeSync</code> di <code>&lt;body&gt;</code>. Keduanya dijalankan pada waktu berbeda.',lines:mk(BASE.root)},
+ {f:'constant',t:'Satu kunci dipakai bersama',x:'<code>THEME_STORAGE_KEY</code> adalah nama laci di localStorage. Skrip dan store sama-sama merujuk ke konstanta ini, jadi tidak ada risiko salah ketik.',via:'skrip & store memakai kunci ini',lines:mk(BASE.constant)},
+ {f:'script',t:'Skrip jalan sebelum layar dicat',x:'Peramban membaca <code>&lt;head&gt;</code> dari atas dan menjalankan skrip ini seketika, sebelum ada yang digambar. Ia membaca localStorage, memutuskan gelap atau terang, lalu memasang class <code>dark</code> pada <code>&lt;html&gt;</code>.',via:'kunci dibaca di <head>',lines:mk(BASE.script),patch:{html:'dark'}},
+ {f:'css',t:'CSS bereaksi pada class dark',x:'Begitu <code>&lt;html&gt;</code> punya class <code>dark</code>, blok <code>.dark</code> menimpa variabel warna dari <code>:root</code>. Utilitas seperti <code>bg-background</code> membaca variabel yang sama, jadi cat pertama sudah gelap.',via:'class .dark di <html>',lines:mk(BASE.css),patch:{cat:'gelap'}},
+ {f:'store',t:'React aktif, store mengambil pilihan tersimpan',x:'Setelah JavaScript hidup, middleware <code>persist</code> membaca localStorage dengan nama yang sama lalu menjalankan <code>merge()</code>. Hasilnya <code>theme</code> berisi <code>"dark"</code>, sama dengan yang tadi diputuskan skrip.',via:'hydrate, persist membaca',lines:mk(BASE.store,[19,22,23]),patch:{store:'dark'}},
+ {f:'types',t:'Penjaga pintu: isTheme',x:'<code>merge()</code> tidak langsung percaya isi localStorage. Jika nilainya bukan <code>light</code>, <code>dark</code>, atau <code>system</code> (misalnya diedit manual), nilai itu dibuang dan default dipakai.',via:'merge() memanggil isTheme()',lines:mk(BASE.types,[5,6])},
+ {f:'sync',t:'ThemeSync menyamakan keadaan',x:'<code>ThemeSync</code> membaca <code>theme</code> dari store lalu memanggil <code>applyTheme</code> di dalam <code>useEffect</code>. Karena theme bukan <code>"system"</code>, fungsi berhenti di baris 10: tidak perlu mendengarkan perubahan OS.',via:'theme dari store',lines:mk(BASE.sync,[9,10])},
+ {f:'apply',t:'applyTheme: satu-satunya yang menyentuh <html>',x:'<code>isDark</code> bernilai true, lalu <code>toggle("dark", true)</code> memasang class yang memang sudah ada. Tidak ada yang berubah, maka tidak ada kedipan. Itulah tugas skrip tadi, React hanya mengonfirmasi.',via:'applyTheme(theme)',lines:mk(BASE.apply,[7,9])}
+ ]},
+{id:'click',label:'Pengguna klik toggle',
+ note:'Pengguna sedang di mode Terang, lalu memilih Gelap dari menu tema.',
+ initial:{ls:lsJson('light'),store:'light',os:'light',html:'',cat:'terang'},
+ steps:[
+ {f:'toggle',t:'Pengguna memilih "Gelap"',x:'Item radio dipilih. <code>onValueChange</code> menerima string <code>"dark"</code> dari komponen menu, tetapi tipenya masih string biasa, belum <code>Theme</code>.',lines:mk(BASE.toggleA,[41,42])},
+ {f:'types',t:'isTheme menyaring nilai',x:'Sebelum masuk store, nilai diperiksa: harus salah satu dari <code>THEMES</code>. Jika lolos, TypeScript juga tahu tipenya sekarang <code>Theme</code>.',via:'isTheme(value)',lines:mk(BASE.types,[5,6])},
+ {f:'store',t:'Store berubah, localStorage ikut ditulis',x:'<code>setTheme</code> memanggil <code>set({ theme })</code>. Middleware <code>persist</code> langsung menulis state ke localStorage dengan kunci <code>app-plt-theme</code>. Itu yang akan dibaca skrip pada kunjungan berikutnya.',via:'setTheme("dark")',lines:mk(BASE.store,[16,19]),patch:{store:'dark',ls:lsJson('dark')}},
+ {f:'sync',t:'ThemeSync melihat theme berubah',x:'Selector <code>useThemeStore</code> memicu render ulang. Karena <code>theme</code> ada di dependency <code>[theme]</code>, <code>useEffect</code> berjalan lagi.',via:'state.theme berubah',lines:mk(BASE.sync,[6,8,9])},
+ {f:'apply',t:'applyTheme memasang class',x:'<code>isDark</code> bernilai true, lalu <code>toggle("dark", true)</code> menambahkan class <code>dark</code> ke <code>&lt;html&gt;</code>.',via:'applyTheme("dark")',lines:mk(BASE.apply,[7,9]),patch:{html:'dark'}},
+ {f:'css',t:'Variabel warna berganti',x:'Blok <code>.dark</code> menimpa variabel dari <code>:root</code>. Semua elemen yang memakai <code>bg-background</code>, <code>text-foreground</code>, dan kawan-kawannya berganti warna serentak.',via:'class .dark di <html>',lines:mk(BASE.css),patch:{cat:'gelap'}},
+ {f:'toggle',t:'Ikon tombol ikut berganti',x:'<code>@custom-variant dark</code> di styles.css membuat <code>dark:</code> berlaku di bawah <code>.dark</code>. Sun disembunyikan dan Moon ditampilkan, tanpa JavaScript tambahan.',via:'varian dark: dari CSS',lines:mk(BASE.toggleB,[34,35])}
+ ]},
+{id:'os',label:'Mode Sistem, OS berganti',
+ note:'Tema disimpan sebagai Sistem. Pengguna mengganti Windows dari terang ke gelap saat aplikasi masih terbuka.',
+ initial:{ls:lsJson('system'),store:'system',os:'light',html:'',cat:'terang'},
+ steps:[
+ {f:'os',t:'Pengguna mengganti Windows ke mode gelap',x:'Peramban mendeteksi perubahan preferensi sistem dan menembakkan event <code>change</code> pada media query <code>prefers-color-scheme</code>.',lines:mk(BASE.os),patch:{os:'dark'}},
+ {f:'sync',t:'Pendengar yang dipasang tadi bangun',x:'Karena theme-nya <code>"system"</code>, <code>ThemeSync</code> sudah memasang pendengar di baris 14. Event itu memanggil <code>handleChange</code>, yang memanggil <code>applyTheme(theme)</code> lagi.',via:'event "change"',lines:mk(BASE.sync,[12,13,14])},
+ {f:'apply',t:'applyTheme menghitung ulang',x:'<code>theme</code> masih <code>"system"</code>, tetapi sekarang <code>matchMedia(...).matches</code> bernilai true, jadi <code>isDark</code> true dan class <code>dark</code> dipasang.',via:'handleChange()',lines:mk(BASE.apply,[8,9]),patch:{html:'dark'}},
+ {f:'css',t:'Variabel warna berganti',x:'Sama seperti klik manual: class <code>dark</code> mengaktifkan blok <code>.dark</code>, dan seluruh halaman berganti warna.',via:'class .dark di <html>',lines:mk(BASE.css),patch:{cat:'gelap'}}
+ ]}
+];
+
+/* ================= UTIL ================= */
+var RX=/(\/\/.*$)|("(?:[^"\\]|\\.)*")|\b(export|const|function|return|import|from|if|var|try|catch|type|as|true|false)\b/g;
+function esc(s){return s.replace(/[&<>]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;'}[c]})}
+function tok(s){
+  var out='',last=0;
+  s.replace(RX,function(m,c,str,kw,off){
+    out+=esc(s.slice(last,off));
+    out+='<em class="'+(c?'c':str?'s':'k')+'">'+esc(m)+'</em>';
+    last=off+m.length;return m;
+  });
+  return out+esc(s.slice(last));
+}
+function lineHTML(l){
+  if(l.gap) return '<div class="ln gap"><i>⋯</i><span></span></div>';
+  return '<div class="ln'+(l.hl?' hl':'')+'"><i>'+l.n+'</i><span>'+tok(l.t)+'</span></div>';
+}
+function cardHTML(s,i){
+  var f=F[s.f];
+  return '<article class="card hue'+(f.actor?' actor':'')+' upcoming" style="--h:'+f.h+'" data-i="'+i+'">'+
+    '<header class="ch"><span class="num">'+(i+1)+'</span><span class="file">'+(f.dir?'<span class="dir">'+f.dir+'</span>':'')+'<b>'+f.name+'</b></span>'+(f.actor?'<span class="tag-actor">bukan file proyek</span>':'')+'</header>'+
+    '<h3>'+s.t+'</h3><p>'+s.x+'</p><div class="code">'+s.lines.map(lineHTML).join('')+'</div></article>';
+}
+function setCls(card,i,cur){
+  card.classList.toggle('done',i<cur);
+  card.classList.toggle('active',i===cur);
+  card.classList.toggle('upcoming',i>cur);
+}
+
+/* ================= PLAYER ================= */
+var P={sc:0,i:0,playing:!reduce,tok:0,timer:null};
+var SCAN_START=950,SCAN_STEP=520,CT=[];
+function SC(){return SCENARIOS[P.sc]}
+function STEPS(){return SC().steps}
+function dur(s){return 2600+s.lines.filter(function(l){return l.hl}).length*SCAN_STEP}
+function stateAt(i){
+  var st=Object.assign({},SC().initial);
+  for(var k=0;k<=i;k++){var p=STEPS()[k].patch;if(p)Object.assign(st,p)}
+  return st;
+}
+var shown=null;
+function renderState(i){
+  var st=stateAt(i);
+  var view={ls:st.ls,store:'"'+st.store+'"',os:st.os==='dark'?'dark':'light',html:'class="'+(st.html||'')+'"',cat:st.cat};
+  $$('#state .row').forEach(function(r){
+    var k=r.dataset.k,dd=$('dd',r);
+    if(dd.textContent!==view[k]){
+      var had=dd.textContent!=='';
+      dd.textContent=view[k];
+      if(had&&shown&&!reduce){r.classList.remove('flash');void r.offsetWidth;r.classList.add('flash')}
+    }
+  });
+  $('#pv').classList.toggle('dk',st.cat==='gelap');
+  shown=st;
+}
+function schedule(){
+  clearTimeout(P.timer);
+  if(!P.playing)return;
+  var last=STEPS().length-1;
+  P.timer=setTimeout(function(){
+    if(P.i<last)go(P.i+1,true);else P.timer=setTimeout(function(){go(0,false)},2400);
+  },dur(STEPS()[P.i]));
+}
+function go(i,anim){
+  var n=STEPS().length;
+  i=Math.max(0,Math.min(n-1,i));
+  var prev=P.i;P.i=i;P.tok++;
+  clearTimeout(P.timer);
+  A.step(i,{anim:!!anim&&i===prev+1,prev:prev});
+  updateCtl();schedule();
+}
+
+/* ================= KONTROL ================= */
+var ICON_PLAY='<svg viewBox="0 0 16 16"><path d="m4 2 10 6-10 6z"/></svg>';
+var ICON_PAUSE='<svg viewBox="0 0 16 16"><path d="M3 2h4v12H3zM9 2h4v12H9z"/></svg>';
+function buildCtl(){
+  $('#seg').innerHTML=SCENARIOS.map(function(s,k){return '<button data-sc="'+k+'" aria-pressed="'+(k===P.sc)+'">'+s.label+'</button>'}).join('');
+  $('#legend').innerHTML=Object.keys(F).map(function(k){var f=F[k];return '<span class="chip hue" style="--h:'+f.h+(f.actor?';--line-c:.02;--chip-c:.01;--ink-c:.02':'')+'">'+f.name+'</span>'}).join('');
+}
+function updateCtl(){
+  var st=STEPS(),n=st.length;
+  $$('#seg button').forEach(function(b){b.setAttribute('aria-pressed',String(+b.dataset.sc===P.sc))});
+  $('#prog').innerHTML=st.map(function(s,k){return '<button class="hue '+(k<P.i?'done':k===P.i?'cur':'')+'" style="--h:'+F[s.f].h+'" data-k="'+k+'" aria-label="Langkah '+(k+1)+'"></button>'}).join('');
+  $('#stepno').textContent='Langkah '+(P.i+1)+'/'+n;
+  $('#prev').disabled=P.i===0;
+  $('#play').innerHTML=P.playing?ICON_PAUSE:ICON_PLAY;
+  $('#scname').textContent=SC().label;
+  $('#viewnote').textContent=SC().note;
+}
+
+/* ================= LINI MASA ================= */
+var A={
+  build:function(root){
+    var st=STEPS();
+    root.innerHTML='<div class="a-wrap"><ol class="a-list">'+st.map(function(s,i){
+      var link=i?'<li class="link" style="--from:'+F[st[i-1].f].h+';--to:'+F[s.f].h+'" data-l="'+i+'"><span class="rail"><span class="dot"></span></span><span class="llabel">'+esc(s.via||'')+'</span></li>':'';
+      return link+'<li>'+cardHTML(s,i)+'</li>';
+    }).join('')+'</ol><aside class="a-side" id="slot"></aside></div>';
+    $('#slot').appendChild($('#state'));$('#state').hidden=false;
+  },
+  step:function(i,o){
+    CT.forEach(clearTimeout);CT=[];
+    $$('.a-list .ln.hl').forEach(function(l){l.classList.remove('pending','now','ran')});
+    $$('.a-list .card').forEach(function(c){setCls(c,+c.dataset.i,i)});
+    $$('.a-list .link').forEach(function(l){
+      var k=+l.dataset.l;
+      l.classList.toggle('done',k<=i);
+      l.classList.remove('run');
+      if(k===i&&o.anim&&!reduce){void l.offsetWidth;l.classList.add('run')}
+    });
+    var card=$('.a-list .card[data-i="'+i+'"]'),hl=$$('.ln.hl',card),t=P.tok;
+    if(reduce){
+      hl.forEach(function(l){l.classList.add('ran')});
+      renderState(i);
+    }else{
+      hl.forEach(function(l){l.classList.add('pending')});
+      var t0=o.anim?SCAN_START:350;
+      hl.forEach(function(l,k){
+        CT.push(setTimeout(function(){
+          if(t!==P.tok)return;
+          if(k>0){hl[k-1].classList.remove('now');hl[k-1].classList.add('ran')}
+          l.classList.remove('pending');l.classList.add('now');
+        },t0+k*SCAN_STEP));
+      });
+      CT.push(setTimeout(function(){
+        if(t!==P.tok)return;
+        var last=hl[hl.length-1];
+        if(last){last.classList.remove('now');last.classList.add('ran')}
+        renderState(i);
+      },t0+hl.length*SCAN_STEP));
+    }
+    if(o.prev!==i)card.scrollIntoView({block:'nearest',behavior:reduce?'auto':'smooth'});
+  }
+};
+
+function mount(){
+  CT.forEach(clearTimeout);CT=[];shown=null;
+  var st=$('#state');document.body.appendChild(st);st.hidden=true;
+  A.build($('#stage'));
+  renderState(Math.max(0,P.i-1));
+  A.step(P.i,{anim:false,prev:P.i});
+  updateCtl();schedule();
+}
+
+/* ================= EVENT ================= */
+$('#seg').addEventListener('click',function(e){
+  var b=e.target.closest('button');if(!b)return;
+  P.sc=+b.dataset.sc;P.i=0;P.tok++;mount();
+});
+$('#prog').addEventListener('click',function(e){var b=e.target.closest('button');if(b)go(+b.dataset.k,false)});
+$('#prev').addEventListener('click',function(){go(P.i-1,false)});
+$('#next').addEventListener('click',function(){
+  var last=STEPS().length-1;
+  go(P.i<last?P.i+1:0,P.i<last);
+});
+$('#play').addEventListener('click',function(){P.playing=!P.playing;updateCtl();schedule()});
+document.addEventListener('keydown',function(e){
+  if(e.key==='ArrowRight'){go(P.i+1,true)}else if(e.key==='ArrowLeft'){go(P.i-1,false)}
+});
+
+/* panel kontrol: penuh di atas halaman, mengecil jadi satu baris saat di-scroll */
+if('IntersectionObserver' in window){
+  new IntersectionObserver(function(en){
+    var e=en[0];
+    $('#ctl').classList.toggle('compact',!e.isIntersecting&&e.boundingClientRect.top<0);
+  }).observe($('#sentinel'));
+}
+
+buildCtl();mount();
+})();
+</script>
+</body>
+</html>

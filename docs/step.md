@@ -234,3 +234,8 @@ Rencana: [2026-10-23-theme-dark-mode.md](./superpowers/plans/2026-10-23-theme-da
       dari handler.
     - Isi dokumen resmi dibaca lewat ringkasan WebFetch, bukan salinan mentah;
       cek ulang di https://tanstack.com/start/latest/docs/framework/react/guide/environment-variables
+  - Tindak lanjut (2026-10-27): kegagalan Prettier akibat CRLF diatasi
+    permanen dengan `.gitattributes` (`* text=auto eol=lf`). Isi repo memang
+    sudah LF; yang CRLF hanya salinan kerja akibat `core.autocrlf=true`. Setelah
+    atribut ditambahkan, git tidak menulis ulang file yang dianggap bersih,
+    jadi 13 file CRLF dihapus lalu di-`git checkout` agar terbentuk ulang LF.

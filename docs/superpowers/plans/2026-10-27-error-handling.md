@@ -125,7 +125,8 @@ git commit -m "feat: add 404 page as router default"
   - `ErrorLayout` dengan `code="500"`, judul "Terjadi kesalahan", deskripsi umum (mis. "Maaf, ada masalah di sisi kami. Silakan coba lagi.").
   - Tombol "Coba lagi" (`type="button"`, `onClick={() => router.invalidate()}`) dan "Ke beranda" (`Button variant="outline" asChild` + `Link`).
   - Mengapa `router.invalidate()`, bukan `reset`: `reset` hanya mereset batas error lokal, sedangkan error dari loader tetap tersimpan di match route. `invalidate()` memuat ulang loader dan ikut mereset boundary (pola di dokumentasi TanStack Router).
-  - Saat `import.meta.env.DEV`, tampilkan `error.message` di `<pre>` kecil (`max-w-full overflow-auto bg-muted p-2 text-left text-xs`) di bawah tombol atau di dalam `children`. Di produksi blok ini tidak dirender sama sekali (bukan sekadar disembunyikan lewat CSS).
+  - Saat `import.meta.env.DEV`, tampilkan pesan error di `<pre>` kecil (`max-w-full overflow-auto bg-muted p-2 text-left text-xs`) di bawah tombol atau di dalam `children`. Di produksi blok ini tidak dirender sama sekali (bukan sekadar disembunyikan lewat CSS).
+  - Tipe `error` di `ErrorComponentProps` adalah `unknown` (apa pun bisa dilempar dengan `throw`), jadi `error.message` ditolak TypeScript. Persempit dulu: `error instanceof Error ? error.message : String(error)`.
 
 <details><summary>Kunci jawaban</summary>
 
@@ -152,7 +153,7 @@ export function ErrorFallback({ error }: ErrorComponentProps) {
       </Button>
       {import.meta.env.DEV && (
         <pre className="mt-2 max-w-full basis-full overflow-auto bg-muted p-2 text-left text-xs">
-          {error.message}
+          {error instanceof Error ? error.message : String(error)}
         </pre>
       )}
     </ErrorLayout>
@@ -168,7 +169,7 @@ Catatan: pada kunci jawaban ini `<pre>` ikut berada di dalam `div.flex` milik `E
 
 - [ ] **Step 3 (User): Verifikasi.** Sisipkan sementara `throw new Error("tes 500")` di badan komponen sebuah route (mis. `src/routes/index.tsx`), buka route itu.
   Expected:
-  - Muncul "500 · Terjadi kesalahan" dengan `error.message` ("tes 500") di bawahnya (karena `npm run dev`).
+  - Muncul "500 · Terjadi kesalahan" dengan pesan error ("tes 500") di bawahnya (karena `npm run dev`).
   - Hapus `throw` itu, simpan, klik "Coba lagi": halaman kembali normal tanpa loop error.
   - Tampilan benar di light dan dark.
   - Kembalikan `throw` sementara tadi sebelum commit. Pastikan `git diff` tidak memuatnya.

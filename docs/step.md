@@ -201,3 +201,36 @@ Rencana: [2026-10-23-theme-dark-mode.md](./superpowers/plans/2026-10-23-theme-da
       mismatch).
     - Type guard (`value is Theme`) dipakai untuk menyempitkan `string` dari
       `onValueChange` menjadi `Theme` tanpa `as`.
+
+### Validasi Environment dengan Zod (A2)
+
+- [x] Selesai (2026-10-27)
+  - `src/lib/env.server.ts`: skema Zod (`NODE_ENV`, `APP_URL`), `parseEnv()`
+    membaca `process.env` dan melempar galat `Konfigurasi environment tidak
+    valid` berisi daftar variabel yang salah. `Env` diturunkan dari skema.
+  - `.env.example` (di-commit) dan `.env` (di-ignore) di root. `.gitignore`
+    mengabaikan `.env*`, jadi ditambah pengecualian `!.env.example`.
+  - Lolos `typecheck`, `lint`, `check`. Validasi dicoba terpisah lewat Node:
+    `APP_URL` benar lolos, `APP_URL` kosong atau bukan URL menghasilkan galat
+    yang jelas.
+  - Pelajaran:
+    - File yang lolos eslint bisa gagal Prettier hanya karena akhir baris
+      CRLF (`.prettierrc` mewajibkan `lf`); `prettier --write` memperbaikinya.
+    - Pola `.env*` di `.gitignore` ikut mengabaikan `.env.example`; perlu
+      pengecualian `!`.
+    - Dokumen resmi TanStack Start: server membaca `process.env` tanpa awalan,
+      client hanya `VITE_`; urutan muat `.env.local`, `.env.production`,
+      `.env.development`, `.env`. Baca env per permintaan di runtime edge;
+      parse tingkat modul "fine for Node.js".
+  - **Belum terverifikasi / perlu dikoreksi bila salah:**
+    - `env` belum diimpor siapa pun, jadi belum terbukti `process.env` terisi
+      dari `.env` saat `npm run dev` (Vite 8, `@tanstack/react-start: latest`).
+      Buktikan saat pemakai pertama muncul (B1: `DATABASE_URL`). Bila kosong,
+      muat `.env` secara eksplisit (mis. `loadEnv` Vite).
+    - Dokumen resmi menyarankan `.env` di-commit dan rahasia di `.env.local`;
+      proyek ini memilih `.env` di-ignore. Tinjau ulang bila tidak nyaman.
+    - Target deploy belum diputuskan (C4). Bila edge, ganti
+      `export const env = parseEnv()` menjadi fungsi `getEnv()` yang dipanggil
+      dari handler.
+    - Isi dokumen resmi dibaca lewat ringkasan WebFetch, bukan salinan mentah;
+      cek ulang di https://tanstack.com/start/latest/docs/framework/react/guide/environment-variables

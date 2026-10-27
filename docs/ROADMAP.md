@@ -12,7 +12,7 @@ Status: `[ ]` belum, `[~]` sedang, `[x]` selesai.
 | # | Item | Status | Catatan |
 | --- | --- | --- | --- |
 | A1 | Refactor login ke struktur feature-based | [x] | Prasyarat semua item lain. Lihat ARCHITECTURE.md |
-| A2 | Validasi environment (Zod) + `.env.example` | [ ] | |
+| A2 | Validasi environment (Zod) + `.env.example` | [x] | Pembuktian `.env` terbaca di server menunggu pemakai pertama (B1). Lihat butir "Belum terverifikasi" di `step.md` |
 | A3 | Penanganan error (boundary, 404/500, toast) | [ ] | |
 | A4 | Pengujian (Vitest, Testing Library, Playwright) | [ ] | |
 | A5 | Git hooks (Husky + lint-staged) | [ ] | |

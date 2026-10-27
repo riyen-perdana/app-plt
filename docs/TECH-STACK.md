@@ -76,6 +76,12 @@ di app `app-plt` (Aplikasi Pelatihan, UIN Suska Riau).
 - **Format kode:** jalankan `npm run format`; cek `npm run check`,
   `npm run lint`, `npm run typecheck` sebelum commit.
 - **Commit:** gaya Conventional Commits (`feat:`, `fix:`, `docs:`), seperti riwayat repo.
+- **Environment:** semua variabel dideklarasikan dan divalidasi di
+  `src/lib/env.server.ts` (skema Zod), dibaca dari server saja. Jangan memakai
+  `process.env` langsung di tempat lain. Variabel yang boleh terlihat di
+  browser harus berawalan `VITE_` dan tidak boleh berisi rahasia. Setiap
+  variabel baru ditambahkan ke skema **dan** `.env.example`. Nilai asli ada di
+  `.env` (di-ignore git); `.env.example` di-commit sebagai contoh.
 
 ## 4. Log Keputusan
 
@@ -86,3 +92,4 @@ di app `app-plt` (Aplikasi Pelatihan, UIN Suska Riau).
 | 2026-10-11 | Dokumen ini ditetapkan sebagai rujukan utama | Menjaga konsistensi keputusan teknis saat fitur/modul bertambah |
 | 2026-10-11 | Struktur folder dipindah ke `ARCHITECTURE.md` (feature-based, skema di `features/<domain>/schemas`); urutan kerja di `ROADMAP.md` | Satu topik satu dokumen, menghindari konflik antar dokumen |
 | 2026-10-23 | Tambah Zustand ^5.0.15 untuk state UI client, dimulai dari tema dark mode (light/dark/system, disimpan di `localStorage`); aturan 9 | Store kecil tanpa provider, middleware `persist` bawaan, cocok untuk state UI yang dibagi lintas komponen. Spec: `docs/superpowers/specs/2026-10-23-theme-dark-mode-design.md` |
+| 2026-10-27 | Validasi environment dengan Zod di `src/lib/env.server.ts`, dibaca di tingkat modul (`export const env = parseEnv()`); `.env` di-ignore, `.env.example` di-commit (pengecualian `!.env.example` di `.gitignore`) | Gagal cepat dengan pesan jelas bila konfigurasi salah. Dokumen resmi TanStack Start menyebut parse tingkat modul "fine for Node.js", tetapi menyarankan baca per permintaan di runtime edge. **Perlu dikoreksi bila:** (1) target deploy (C4) ternyata edge, ubah ke fungsi `getEnv()` yang dipanggil dari handler; (2) `process.env` ternyata tidak terisi dari `.env` di server (belum terbukti, lihat `step.md`); (3) memilih mengikuti dokumen resmi (`.env` di-commit, rahasia di `.env.local`) |

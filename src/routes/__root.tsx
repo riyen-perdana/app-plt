@@ -4,6 +4,7 @@ import { TanStackDevtools } from "@tanstack/react-devtools"
 import { APP_NAME, APP_INSTITUSI } from "@/lib/constant"
 import { ThemeSync } from "@/features/theme/components/theme-sync"
 import { themeScript } from "@/features/theme/theme-script"
+import { AppToaster } from "@/features/theme/components/app-toaster"
 
 import appCss from "../styles.css?url"
 
@@ -50,6 +51,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       </head>
       <body suppressHydrationWarning>
         <ThemeSync />
+        <AppToaster />
         {children}
         <TanStackDevtools
           config={{

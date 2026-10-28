@@ -239,3 +239,54 @@ Rencana: [2026-10-23-theme-dark-mode.md](./superpowers/plans/2026-10-23-theme-da
     sudah LF; yang CRLF hanya salinan kerja akibat `core.autocrlf=true`. Setelah
     atribut ditambahkan, git tidak menulis ulang file yang dianggap bersih,
     jadi 13 file CRLF dihapus lalu di-`git checkout` agar terbentuk ulang LF.
+
+### Penanganan Error (A3)
+Spec: [2026-10-27-error-handling-design.md](./superpowers/specs/2026-10-27-error-handling-design.md).
+Rencana: [2026-10-27-error-handling.md](./superpowers/plans/2026-10-27-error-handling.md).
+
+- [x] Task 1, halaman 404 (2026-10-27): `ErrorLayout` (kerangka bersama) dan
+  `NotFound` di `src/components/errors/`, dipasang sebagai
+  `defaultNotFoundComponent` di `router.tsx`. Commit `66b40aa`.
+- [x] Task 2, halaman 500 (2026-10-28): `ErrorFallback` dipasang sebagai
+  `defaultErrorComponent`. Commit `ea0644c`.
+  - Hasil: tombol "Coba lagi" (`router.invalidate()`) dan "Ke beranda"; pesan
+    error muncul di bagian bawah layar lewat prop `details` di `ErrorLayout`,
+    hanya saat `import.meta.env.DEV`.
+  - Pelajaran:
+    - `Button asChild` memakai `Slot` Radix yang hanya menerima **satu** anak.
+      Dua anak melempar error saat render, sehingga halaman error malah
+      menimbulkan error baru. Pisahkan menjadi dua `Button`.
+    - `error` di `ErrorComponentProps` bertipe `unknown` (JavaScript boleh
+      `throw` apa saja). Persempit dulu dengan `error instanceof Error`.
+    - Konten di luar `ErrorLayout` jatuh di bawah layar karena `<main>` bertinggi
+      `min-h-svh`. Agar pesan menempel di bawah layar tanpa menggeser konten
+      yang dipusatkan, taruh di dalam `<main>` dengan `relative` pada `<main>`
+      dan `absolute inset-x-0 bottom-0` pada pembungkus `details`.
+    - JSX hanya boleh punya satu elemen akar per `return`.
+    - Error saat render di server membuat React "beralih ke client rendering",
+      sehingga `ErrorFallback` baru muncul di browser. Hasil `curl` tidak bisa
+      membuktikan tampilannya; harus dilihat langsung di browser.
+    - Auto import VS Code: pilih saran bernama sama (Enter/Tab) atau
+      Ctrl + . pada nama yang bergaris merah. Periksa agar path memakai alias
+      `@/`, bukan path relatif.
+  - Catatan: `throw` sementara untuk uji dikembalikan sebelum commit; `git diff`
+    harus bersih dari sisa pengujian.
+- [~] Task 3, toast Sonner (2026-10-28): kode selesai, verifikasi di browser
+  belum.
+  - Langkah 1: `TECH-STACK.md` memuat baris Sonner (^2.0.8), konvensi umpan
+    balik mutasi, dan entri Log Keputusan.
+  - Langkah 2-5: `ui/sonner.tsx` dipasang lewat CLI shadcn lalu dilepas dari
+    `next-themes` (paketnya di-uninstall); `AppToaster` di
+    `features/theme/components/` membaca `useThemeStore`; dipasang di
+    `routes/__root.tsx` di dekat `ThemeSync`.
+  - Lolos `typecheck`, `lint`, `check`.
+  - Pelajaran:
+    - `create` dari Zustand mengembalikan hook yang terhubung ke penampung
+      state di luar React; selector `(state) => state.theme` memilih bagian
+      yang dibaca, dan komponen hanya dirender ulang bila hasilnya berubah.
+      Nama parameter selector bebas; nama properti harus sama dengan
+      `ThemeState`. `set` hanya menulis, bukan sumber bacaan.
+    - `{...props}` ditaruh paling akhir di `<Sonner>` agar `theme` dari
+      pemanggil menimpa bawaan, sehingga `ui/sonner.tsx` tetap generik.
+  - Belum: Langkah 6 (uji `toast("tes toast")` sementara di browser, termasuk
+    ganti tema) dan Langkah 7 (`ARCHITECTURE.md`, `ROADMAP.md` A3 menjadi `[x]`).

@@ -33,6 +33,7 @@ di app `app-plt` (Aplikasi Pelatihan, UIN Suska Riau).
 | Form | TanStack Form (`@tanstack/react-form`) | ^1.33.5 | Seluruh state & submit form |
 | Validasi | Zod (`zod`) | ^4.6.5 | Skema validasi tunggal untuk client & server |
 | State UI client | Zustand (`zustand`) | ^5.0.15 | State sisi client yang dibagi lintas komponen (mulai dari tema light/dark/system); `persist` ke `localStorage` |
+| Toast / notifikasi | Sonner (`sonner`) | ^2.0.8 | Umpan balik hasil mutasi lewat `toast.error(...)`/`toast.success(...)`. `Toaster` berasal dari komponen shadcn `ui/sonner`, temanya mengikuti store Zustand lewat `AppToaster` |
 
 ## 2. Aturan Keputusan
 
@@ -73,6 +74,9 @@ di app `app-plt` (Aplikasi Pelatihan, UIN Suska Riau).
   `export type LoginInput = z.infer<typeof loginSchema>`.
 - **Nama field form:** sama persis di skema Zod, `defaultValues`, dan atribut
   `name`/`id` input.
+- **Umpan balik hasil mutasi:** berhasil atau gagal memanggil server →
+  `toast` dari `sonner` (impor langsung, tanpa helper tambahan). Error validasi
+  per field tetap ditampilkan dengan `FieldError`, bukan toast.
 - **Format kode:** jalankan `npm run format`; cek `npm run check`,
   `npm run lint`, `npm run typecheck` sebelum commit.
 - **Commit:** gaya Conventional Commits (`feat:`, `fix:`, `docs:`), seperti riwayat repo.
@@ -94,3 +98,4 @@ di app `app-plt` (Aplikasi Pelatihan, UIN Suska Riau).
 | 2026-10-23 | Tambah Zustand ^5.0.15 untuk state UI client, dimulai dari tema dark mode (light/dark/system, disimpan di `localStorage`); aturan 9 | Store kecil tanpa provider, middleware `persist` bawaan, cocok untuk state UI yang dibagi lintas komponen. Spec: `docs/superpowers/specs/2026-10-23-theme-dark-mode-design.md` |
 | 2026-10-27 | Validasi environment dengan Zod di `src/lib/env.server.ts`, dibaca di tingkat modul (`export const env = parseEnv()`); `.env` di-ignore, `.env.example` di-commit (pengecualian `!.env.example` di `.gitignore`) | Gagal cepat dengan pesan jelas bila konfigurasi salah. Dokumen resmi TanStack Start menyebut parse tingkat modul "fine for Node.js", tetapi menyarankan baca per permintaan di runtime edge. **Perlu dikoreksi bila:** (1) target deploy (C4) ternyata edge, ubah ke fungsi `getEnv()` yang dipanggil dari handler; (2) `process.env` ternyata tidak terisi dari `.env` di server (belum terbukti, lihat `step.md`); (3) memilih mengikuti dokumen resmi (`.env` di-commit, rahasia di `.env.local`) |
 | 2026-10-27 | Tambah `.gitattributes` (`* text=auto eol=lf`) | Di Windows dengan `core.autocrlf=true`, checkout menghasilkan CRLF sehingga `npm run check` (Prettier `endOfLine: lf`) gagal. Repo sudah LF; atribut ini memaksa LF di semua mesin tanpa mengubah setelan git global |
+| 2026-10-27 | Tambah Sonner untuk toast, dipasang lewat CLI shadcn (`npx shadcn@latest add sonner`); `ui/sonner.tsx` dilepas dari `next-themes` dan menerima `theme` lewat props; `AppToaster` di `features/theme` membaca `useThemeStore` | Komponen shadcn resmi (aturan 5). Tema sudah punya satu sumber kebenaran di Zustand (aturan 9), jadi tidak perlu `next-themes`; `components/` tidak boleh mengimpor dari `features/`, maka pembungkus yang sadar tema ditaruh di `features/theme`. Spec: `docs/superpowers/specs/2026-10-27-error-handling-design.md`. CLI turut memasang `next-themes` (^0.4.6) yang hanya dipakai `ui/sonner.tsx`; dilepas lagi dengan `npm uninstall next-themes` setelah `ui/sonner.tsx` disesuaikan. **Perlu dikoreksi bila:** `next-themes` ternyata masih dipakai tempat lain |

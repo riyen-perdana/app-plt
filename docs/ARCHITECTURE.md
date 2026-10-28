@@ -16,16 +16,27 @@ src/
       types.ts
   components/
     ui/              # shadcn (jangan diubah isinya tanpa alasan)
+    errors/          # halaman 404/500 bersama (ErrorLayout, NotFound, ErrorFallback)
     ...              # komponen umum lintas fitur
   lib/               # util, konstanta, konfigurasi lintas fitur
 ```
 
 Contoh fitur lintas halaman: `features/theme` (tema light/dark/system). Isinya
 `store.ts` (Zustand), `apply-theme.ts`, `theme-script.ts`, `types.ts`, dan
-`components/` (`ThemeSync`, `ThemeToggle`). `routes/__root.tsx` memasang
-`ThemeSync` dan `themeScript`, `routes/_auth/route.tsx` memasang `ThemeToggle`;
-tidak ada logika tema di `routes/`. Komponen lain yang butuh tema cukup
-mengimpor `ThemeToggle` atau `useThemeStore`.
+`components/` (`ThemeSync`, `ThemeToggle`, `AppToaster`). `routes/__root.tsx`
+memasang `ThemeSync`, `AppToaster`, dan `themeScript`, `routes/_auth/route.tsx`
+memasang `ThemeToggle`; tidak ada logika tema di `routes/`. Komponen lain yang
+butuh tema cukup mengimpor `ThemeToggle` atau `useThemeStore`.
+
+`AppToaster` membungkus `Toaster` dari `components/ui/sonner` dan meneruskan
+tema dari `useThemeStore`. `ui/sonner.tsx` sengaja generik (menerima `theme`
+lewat props) agar `components/` tidak mengimpor dari `features/`. Fitur yang
+butuh umpan balik cukup `import { toast } from "sonner"`.
+
+Penanganan error lintas route ada di `components/errors/` (`ErrorLayout`
+sebagai kerangka, `NotFound`, `ErrorFallback`). Keduanya dipasang satu kali di
+`router.tsx` sebagai `defaultNotFoundComponent` dan `defaultErrorComponent`,
+bukan per route; route tertentu tetap bisa menimpanya.
 
 Aturan dependensi: `routes` -> `features` -> `components`/`lib`. Fitur tidak boleh mengimpor dari fitur lain secara langsung; hal yang dipakai bersama dipindah ke `components/` atau `lib/`.
 

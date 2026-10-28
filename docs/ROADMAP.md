@@ -13,7 +13,7 @@ Status: `[ ]` belum, `[~]` sedang, `[x]` selesai.
 | --- | --- | --- | --- |
 | A1 | Refactor login ke struktur feature-based | [x] | Prasyarat semua item lain. Lihat ARCHITECTURE.md |
 | A2 | Validasi environment (Zod) + `.env.example` | [x] | Pembuktian `.env` terbaca di server menunggu pemakai pertama (B1). Lihat butir "Belum terverifikasi" di `step.md` |
-| A3 | Penanganan error (boundary, 404/500, toast) | [~] | Spec dan rencana: `docs/superpowers/specs|plans/2026-10-27-error-handling*` |
+| A3 | Penanganan error (boundary, 404/500, toast) | [x] | `components/errors` dan `AppToaster`. Spec dan rencana: `docs/superpowers/specs|plans/2026-10-27-error-handling*`. Toast belum dipakai di form; menunggu server function pertama (B2) |
 | A4 | Pengujian (Vitest, Testing Library, Playwright) | [ ] | |
 | A5 | Git hooks (Husky + lint-staged) | [ ] | |
 | A6 | CI (GitHub Actions: lint, typecheck, test, build) | [ ] | Butuh A4 |

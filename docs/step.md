@@ -271,8 +271,8 @@ Rencana: [2026-10-27-error-handling.md](./superpowers/plans/2026-10-27-error-han
       `@/`, bukan path relatif.
   - Catatan: `throw` sementara untuk uji dikembalikan sebelum commit; `git diff`
     harus bersih dari sisa pengujian.
-- [~] Task 3, toast Sonner (2026-10-28): kode selesai, verifikasi di browser
-  belum.
+- [x] Task 3, toast Sonner (2026-10-28): selesai dan terverifikasi di browser
+  oleh pemilik proyek (toast tampil dan mengikuti tema). A3 selesai.
   - Langkah 1: `TECH-STACK.md` memuat baris Sonner (^2.0.8), konvensi umpan
     balik mutasi, dan entri Log Keputusan.
   - Langkah 2-5: `ui/sonner.tsx` dipasang lewat CLI shadcn lalu dilepas dari
@@ -288,5 +288,15 @@ Rencana: [2026-10-27-error-handling.md](./superpowers/plans/2026-10-27-error-han
       `ThemeState`. `set` hanya menulis, bukan sumber bacaan.
     - `{...props}` ditaruh paling akhir di `<Sonner>` agar `theme` dari
       pemanggil menimpa bawaan, sehingga `ui/sonner.tsx` tetap generik.
-  - Belum: Langkah 6 (uji `toast("tes toast")` sementara di browser, termasuk
-    ganti tema) dan Langkah 7 (`ARCHITECTURE.md`, `ROADMAP.md` A3 menjadi `[x]`).
+  - Langkah 6: uji sementara di `routes/index.tsx` memakai `toast.success`
+    dengan `description` dan `duration`. Kode uji dibuang sebelum commit.
+  - Langkah 7: `ARCHITECTURE.md` (tambah `components/errors` dan `AppToaster`)
+    dan `ROADMAP.md` (A3 menjadi `[x]`) sudah diperbarui.
+  - Pelajaran tambahan:
+    - Hanya `toast.success/error/warning/info/loading` yang membawa ikon
+      bawaan (diatur lewat prop `icons` di `ui/sonner.tsx`); `toast("...")`
+      polos tanpa ikon.
+    - Opsi per toast (`description`, `duration`, `action`, `icon`) dikirim
+      sebagai argumen kedua; pengaturan global (posisi, `closeButton`,
+      `richColors`) sebagai prop `Toaster`. Keputusan pengaturan global
+      ditunda sampai ada pemakai nyata (B2).
